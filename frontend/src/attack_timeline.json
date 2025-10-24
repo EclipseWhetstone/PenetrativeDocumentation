@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Recon Scripts Detected",
+    "timestamp": "2024-09-14T07:24:00Z",
+    "description": "Network telemetry highlights targeted scans against exposed RDP endpoints originating from unfamiliar cloud infrastructure.",
+    "emotion": "curious"
+  },
+  {
+    "title": "Payload Delivery",
+    "timestamp": "2024-09-14T08:02:00Z",
+    "description": "A crafted Excel document weaponized with VBA macros is executed by an accounting workstation, launching the initial loader.",
+    "emotion": "focus"
+  },
+  {
+    "title": "Credential Harvest",
+    "timestamp": "2024-09-14T08:37:00Z",
+    "description": "Mimikatz-style tooling scrapes LSASS memory, siphoning cached domain administrator credentials for privilege escalation.",
+    "emotion": "alert"
+  },
+  {
+    "title": "Shadow Copy Cleanup",
+    "timestamp": "2024-09-14T08:45:00Z",
+    "description": "The ransomware binary purges Windows shadow copies and enumerates shared drives before encryption routines begin.",
+    "emotion": "alarm"
+  }
+]

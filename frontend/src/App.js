@@ -1,202 +1,299 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import AttackTimeline from "./components/AttackTimeline";
+import AttackMap from "./components/AttackMap";
+import AdaptiveIntelligence from "./components/AdaptiveIntelligence";
+import VulnerabilityDetail from "./components/VulnerabilityDetail";
+import { emotionFaces } from "./emotionFaces";
+import "./App.css";
 
+const statusEmotions = {
+  idle: emotionFaces.idle,
+  scanning: emotionFaces.focus,
+  simulating: emotionFaces.curious,
+  success: emotionFaces.delight,
+  error: emotionFaces.alarm,
+  analyzing: emotionFaces.stealth,
+};
 
-// CSS-in-JS styling, just to keep all the styling in one file.
-const styles = {
-  container: {
-    fontFamily: 'Arial, sans-serif',
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px',
-    backgroundColor: '#f4f7f6',
-    borderRadius: '8px'
-  },
-  header: {
-    fontSize: '2.5em',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: '30px'
-  },
-  buttonContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginBottom: '30px'
-  },
-  button: {
-    padding: '12px 25px',
-    fontSize: '1.1em',
-    margin: '0 10px',
-    cursor: 'pointer',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    transition: 'background-color 0.3s ease'
-  },
-  buttonDisabled: {
-    backgroundColor: '#cccccc',
-    cursor: 'not-allowed'
-  },
-  section: {
-    marginTop: '20px',
-    border: '1px solid #ddd',
-    padding: '15px',
-    borderRadius: '5px',
-    backgroundColor: 'white'
-  },
-  sectionTitle: {
-    fontSize: '1.5em',
-    marginBottom: '10px',
-    color: '#555'
-  },
-  preformatted: {
-    whiteSpace: 'pre-wrap',
-    wordWrap: 'break-word',
-    backgroundColor: '#efefef',
-    padding: '10px',
-    borderRadius: '4px',
-    maxHeight: '250px',
-    overflowY: 'auto'
-  },
-  log: {
-    backgroundColor: '#2b2b2b',
-    color: '#a9b7c6',
-    fontFamily: 'monospace',
-    minHeight: '200px'
-  }
+const storageKeys = {
+  scanResults: "pd_scan_results",
+  simulationLog: "pd_simulation_log",
+  activeView: "pd_active_view",
 };
 
 function App() {
-  const [status, setStatus] = useState("");
-  const [scanResults, setScanResults] = useState('');
+  const [scanResults, setScanResults] = useState([]);
   const [simulationLog, setSimulationLog] = useState([]);
+  const [activeView, setActiveView] = useState("report");
   const [isSimulating, setIsSimulating] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [statusMood, setStatusMood] = useState("idle");
+  const [statusMessage, setStatusMessage] = useState("System idle. Awaiting commands.");
 
-  // --- INTEGRATION: Handles the actual data from the Flask backend's /api/scan endpoint ---
+  const eventSourceRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const storedScanResults = window.localStorage.getItem(storageKeys.scanResults);
+      const storedSimulationLog = window.localStorage.getItem(storageKeys.simulationLog);
+      const storedView = window.localStorage.getItem(storageKeys.activeView);
+
+      if (storedScanResults) {
+        setScanResults(JSON.parse(storedScanResults));
+      }
+      if (storedSimulationLog) {
+        setSimulationLog(JSON.parse(storedSimulationLog));
+      }
+      if (storedView) {
+        setActiveView(storedView);
+      }
+    } catch (error) {
+      console.error("Failed to restore previous session", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(storageKeys.scanResults, JSON.stringify(scanResults));
+  }, [scanResults]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(storageKeys.simulationLog, JSON.stringify(simulationLog));
+  }, [simulationLog]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(storageKeys.activeView, activeView);
+  }, [activeView]);
+
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+      }
+    };
+  }, []);
+
+  const updateStatus = (mood, message) => {
+    setStatusMood(mood);
+    setStatusMessage(message);
+  };
+
   const handleScan = async () => {
     setIsScanning(true);
-    setScanResults('Scanning system, please wait...');
+    setScanResults([]);
+    updateStatus("scanning", "Recomputing findings. Stay frosty...");
+
     try {
-      // Proxy in package.json forwards request to http://localhost:5000
-      const response = await fetch('/api/scan');
+      const response = await fetch("/api/scan");
       if (!response.ok) {
         throw new Error(`Server responded with status: ${response.status}`);
       }
       const data = await response.json();
-      // Format the array of strings into a single block of text
-      setScanResults(data.join('\n'));
+      const normalized = Array.isArray(data) ? data : [String(data)];
+      setScanResults(normalized);
+      updateStatus("success", "Scan complete. Review the intelligence below.");
     } catch (error) {
-      setScanResults(`Error: Could not perform scan. ${error.message}`);
+      console.error(error);
+      setScanResults([`Error: Could not perform scan. ${error.message}`]);
+      updateStatus("error", "Scan failed. Check the backend link and try again.");
     } finally {
       setIsScanning(false);
     }
   };
 
-  // --- INTEGRATION: Handles the test simulation stream from the Flask backend ---
   const handleSimulate = () => {
-    setIsSimulating(true);
-    setSimulationLog([]); // Clear previous logs
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
 
-    const eventSource = new EventSource('/api/simulate', { method: 'POST' });
+    setIsSimulating(true);
+    setSimulationLog([]);
+    updateStatus("simulating", "Attack simulation engaged. Streaming live telemetry...");
+
+    const eventSource = new EventSource("/api/simulate");
+    eventSourceRef.current = eventSource;
 
     eventSource.onmessage = (event) => {
       if (event.data === "FINISHED") {
         eventSource.close();
+        eventSourceRef.current = null;
         setIsSimulating(false);
+        updateStatus("success", "Simulation finished. Debrief in the log.");
       } else {
-        setSimulationLog(prevLog => [...prevLog, event.data]);
+        setSimulationLog((prevLog) => [...prevLog, event.data]);
       }
     };
 
     eventSource.onerror = () => {
-      setSimulationLog(prevLog => [...prevLog, 'Error: Connection to simulation server lost.']);
-      eventSource.close();
+      setSimulationLog((prevLog) => [
+        ...prevLog,
+        "Error: Connection to simulation server lost.",
+      ]);
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
       setIsSimulating(false);
+      updateStatus("error", "Simulation interrupted. Investigate the Flask service.");
     };
   };
 
-  return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>Security Simulation Control Panel</h1>
+  const moodIcon = useMemo(() => statusEmotions[statusMood] || statusEmotions.idle, [statusMood]);
 
-      <div style={styles.buttonContainer}>
-        <button
-          onClick={handleScan}
-          style={{...styles.button, ...(isScanning && styles.buttonDisabled)}}
-          disabled={isScanning || isSimulating}
-        >
-          {isScanning ? 'Scanning...' : 'Run System Scan'}
-        </button>
-        <button
-          onClick={handleSimulate}
-          style={{...styles.button, ...(isSimulating && styles.buttonDisabled)}}
-          disabled={isSimulating || isScanning}
-        >
-          {isSimulating ? 'Simulation in Progress...' : 'Start Attack Simulation'}
-        </button>
-      </div>
+  const handleChangeView = (view) => {
+    setActiveView(view);
+    if (isScanning || isSimulating) {
+      return;
+    }
 
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Scan Results</h2>
-        <pre style={styles.preformatted}>{scanResults || 'Click "Run System Scan" to begin.'}</pre>
-      </div>
-
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Simulation Log</h2>
-        <pre style={{...styles.preformatted, ...styles.log}}>
-          {simulationLog.length > 0 ? simulationLog.join('\n') : 'Simulation log will appear here.'}
-        </pre>
-    </div>
-       <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Attack Timeline</h2>
-        <p>Attack Timeline loaded successfully</p>
-        <AttackTimeline />
-      </div>
-    </div>
-  );
-}
-
-
-export default App;
-
-/*
-// --- Eclipse's original block of code ---
-
-function App() {
-  const [status, setStatus] = useState("");
-
-  const sendReport = async () => {
-    const payload = {
-      machine_id: "test-client",
-      timestamp: new Date().toISOString(),
-      event: "REPORT_VIEWED",
-      data: {}
-    };
-
-    try {
-      const res = await fetch("/api/report", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      const json = await res.json();
-      setStatus("Server response: " + JSON.stringify(json));
-    } catch (err) {
-      setStatus("Error: " + err.message);
+    if (view === "map") {
+      updateStatus("simulating", "Visualizing adversary pathways on the attack map.");
+    } else if (view === "timeline") {
+      updateStatus("scanning", "Reviewing engagement timeline for situational awareness.");
+    } else if (view === "intelligence") {
+      updateStatus("analyzing", "Tuning adaptive intelligence recommendations.");
+    } else {
+      updateStatus("idle", "System idle. Awaiting commands.");
     }
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Virus App Frontend</h1>
-      <button onClick={sendReport}>Send Test Report</button>
-      <p>{status}</p>
+    <div className="app-shell">
+      <header className="app-header">
+        <div>
+          <h1>Security Simulation Control Panel</h1>
+          <p>Coordinate scans, simulations, and visualize adversary movement in one place.</p>
+        </div>
+        <div className="status-chip">
+          <span className="status-chip__face">{moodIcon}</span>
+          <span className="status-chip__text">{statusMessage}</span>
+        </div>
+      </header>
+
+      <nav className="app-nav">
+        <button
+          className={activeView === "report" ? "active" : ""}
+          onClick={() => handleChangeView("report")}
+          type="button"
+        >
+          Dashboard
+        </button>
+        <button
+          className={activeView === "map" ? "active" : ""}
+          onClick={() => handleChangeView("map")}
+          type="button"
+        >
+          View Attack Map
+        </button>
+        <button
+          className={activeView === "timeline" ? "active" : ""}
+          onClick={() => handleChangeView("timeline")}
+          type="button"
+        >
+          Timeline
+        </button>
+        <button
+          className={activeView === "intelligence" ? "active" : ""}
+          onClick={() => handleChangeView("intelligence")}
+          type="button"
+        >
+          Adaptive Intelligence
+        </button>
+      </nav>
+
+      {activeView === "report" && (
+        <main className="dashboard">
+          <section className="matrix-card">
+            <div className="panel-header">
+              <h2>Operations Console</h2>
+              <p className="panel-subtitle">
+                Trigger scans or attack simulations. Buttons are locked while an operation is live.
+              </p>
+            </div>
+            <div className="control-grid">
+              <button
+                className="matrix-button"
+                onClick={handleScan}
+                disabled={isScanning || isSimulating}
+                type="button"
+              >
+                {isScanning ? "Scanning..." : "Run System Scan"}
+              </button>
+              <button
+                className="matrix-button"
+                onClick={handleSimulate}
+                disabled={isSimulating || isScanning}
+                type="button"
+              >
+                {isSimulating ? "Simulation in Progress..." : "Start Attack Simulation"}
+              </button>
+            </div>
+          </section>
+
+          <section className="matrix-card">
+            <div className="panel-header">
+              <h2>Recompute Findings</h2>
+              <p className="panel-subtitle">
+                Structured vulnerability intel renders here as soon as the backend sends updates.
+              </p>
+            </div>
+            <div className="findings">
+              {isScanning && scanResults.length === 0 ? (
+                <p className="details-text">{emotionFaces.focus} Gathering host evidence...</p>
+              ) : null}
+              {!isScanning && scanResults.length === 0 ? (
+                <p className="details-text">{emotionFaces.calm} Launch a scan to populate findings.</p>
+              ) : null}
+              {scanResults.map((finding, index) => (
+                <VulnerabilityDetail key={`${index}-${finding.slice(0, 20)}`} rawFinding={finding} />
+              ))}
+            </div>
+          </section>
+
+          <section className="matrix-card">
+            <div className="panel-header">
+              <h2>Simulation Log</h2>
+              <p className="panel-subtitle">
+                The stream updates live so you can step away and return without losing context.
+              </p>
+            </div>
+            <div className="log-window">
+              {simulationLog.length > 0 ? (
+                <ul>
+                  {simulationLog.map((entry, index) => (
+                    <li key={`${index}-${entry}`}>{entry}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="details-text">{emotionFaces.idle} Simulation output will appear here.</p>
+              )}
+            </div>
+          </section>
+        </main>
+      )}
+
+      {activeView === "map" && (
+        <main>
+          <AttackMap />
+        </main>
+      )}
+
+      {activeView === "timeline" && (
+        <main>
+          <AttackTimeline />
+        </main>
+      )}
+
+      {activeView === "intelligence" && (
+        <main>
+          <AdaptiveIntelligence onStatusChange={updateStatus} />
+        </main>
+      )}
     </div>
   );
 }
 
 export default App;
- */

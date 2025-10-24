@@ -1,0 +1,75 @@
+{
+  "techniques": {
+    "Credential Spray": {
+      "name": "Credential Spray",
+      "category": "Credential Access",
+      "description": "Reuse of weak passwords across many discovered hosts.",
+      "attempts": 0,
+      "successes": 0,
+      "failures": 0,
+      "score": 0.45,
+      "success_rate": 0.0,
+      "last_outcome": null,
+      "last_target": null,
+      "last_timestamp": null,
+      "avg_dwell_time": null
+    },
+    "SMB Relay": {
+      "name": "SMB Relay",
+      "category": "Lateral Movement",
+      "description": "Intercepts NTLM handshakes to pivot across internal devices.",
+      "attempts": 0,
+      "successes": 0,
+      "failures": 0,
+      "score": 0.5,
+      "success_rate": 0.0,
+      "last_outcome": null,
+      "last_target": null,
+      "last_timestamp": null,
+      "avg_dwell_time": null
+    },
+    "PowerShell Recon": {
+      "name": "PowerShell Recon",
+      "category": "Discovery",
+      "description": "Collects host configuration data to seed follow-on attacks.",
+      "attempts": 0,
+      "successes": 0,
+      "failures": 0,
+      "score": 0.4,
+      "success_rate": 0.0,
+      "last_outcome": null,
+      "last_target": null,
+      "last_timestamp": null,
+      "avg_dwell_time": null
+    },
+    "Phishing Dropper": {
+      "name": "Phishing Dropper",
+      "category": "Initial Access",
+      "description": "Delivers weaponized payloads via simulated spear-phish campaigns.",
+      "attempts": 0,
+      "successes": 0,
+      "failures": 0,
+      "score": 0.35,
+      "success_rate": 0.0,
+      "last_outcome": null,
+      "last_target": null,
+      "last_timestamp": null,
+      "avg_dwell_time": null
+    },
+    "Privilege Escalation Audit": {
+      "name": "Privilege Escalation Audit",
+      "category": "Privilege Escalation",
+      "description": "Analyzes service misconfigurations for local escalation paths.",
+      "attempts": 0,
+      "successes": 0,
+      "failures": 0,
+      "score": 0.42,
+      "success_rate": 0.0,
+      "last_outcome": null,
+      "last_target": null,
+      "last_timestamp": null,
+      "avg_dwell_time": null
+    }
+  },
+  "history": []
+}

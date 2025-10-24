@@ -1,0 +1,129 @@
+{
+  "nodes": [
+    {
+      "id": "recon",
+      "label": "Reconnaissance",
+      "details": "The adversary quietly scrapes OSINT sources, cataloging services, exposed ports, and leaked credentials before making a move.",
+      "emotion": "curious",
+      "position": { "x": -150, "y": 0 },
+      "checkpoints": [
+        "Harvest employee emails and open services",
+        "Enumerate VPN and remote access portals"
+      ],
+      "detection": [
+        "Track anomalous scanning volume against VPN gateways",
+        "Correlate credential stuffing attempts across providers"
+      ],
+      "mitigation": [
+        "Rotate external service credentials regularly",
+        "Ensure rate-limiting on public endpoints"
+      ]
+    },
+    {
+      "id": "initial_access",
+      "label": "Initial Access",
+      "details": "A spear-phishing lure convinces an analyst to execute a malicious payload that beacons back to command and control.",
+      "emotion": "focus",
+      "position": { "x": 150, "y": -80 },
+      "highlight": true,
+      "checkpoints": [
+        "Deliver payload through phishing attachment",
+        "Establish outbound connection to staging server"
+      ],
+      "detection": [
+        "Inspect email gateway logs for unusual attachment types",
+        "Monitor EDR for script interpreter spawns from mail clients"
+      ],
+      "mitigation": [
+        "Implement phishing resistant MFA",
+        "Train staff with contextual phishing simulations"
+      ]
+    },
+    {
+      "id": "privilege_escalation",
+      "label": "Privilege Escalation",
+      "details": "Living-off-the-land binaries abuse local token privileges to inherit domain administrator capabilities.",
+      "emotion": "alert",
+      "position": { "x": 450, "y": 40 },
+      "checkpoints": [
+        "Dump cached credentials from compromised endpoint",
+        "Leverage token manipulation to hop onto domain controller"
+      ],
+      "detection": [
+        "Alert on unusual use of PowerShell with encoded commands",
+        "Audit privileged group membership changes in real-time"
+      ],
+      "mitigation": [
+        "Implement Just-In-Time admin provisioning",
+        "Harden PowerShell logging and enforce constrained language mode"
+      ]
+    },
+    {
+      "id": "lateral_movement",
+      "label": "Lateral Movement",
+      "details": "Attacker pivots using remote service protocols, copying tooling across file shares to broaden foothold.",
+      "emotion": "caution",
+      "position": { "x": 200, "y": 240 },
+      "checkpoints": [
+        "Scan internal network segments for additional assets",
+        "Reuse harvested credentials to authenticate laterally"
+      ],
+      "detection": [
+        "Alert on abnormal SMB session creation volumes",
+        "Watch for RDP logons outside approved maintenance windows"
+      ],
+      "mitigation": [
+        "Segment networks to limit pivot paths",
+        "Deploy honey accounts to detect credential reuse"
+      ]
+    },
+    {
+      "id": "impact",
+      "label": "Impact",
+      "details": "Critical file shares are encrypted and exfiltrated, culminating in a double-extortion ultimatum.",
+      "emotion": "alarm",
+      "position": { "x": 520, "y": 260 },
+      "checkpoints": [
+        "Encrypt shared document repositories",
+        "Exfiltrate backups to external storage"
+      ],
+      "detection": [
+        "Detect mass file renames with ransomware signatures",
+        "Monitor outbound data spikes to untrusted destinations"
+      ],
+      "mitigation": [
+        "Maintain immutable backups and tested recovery plans",
+        "Implement DLP policies on sensitive repositories"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "recon",
+      "target": "initial_access",
+      "label": "Phishing intelligence",
+      "animated": true
+    },
+    {
+      "id": "e2",
+      "source": "initial_access",
+      "target": "privilege_escalation",
+      "label": "Token abuse"
+    },
+    {
+      "id": "e3",
+      "source": "privilege_escalation",
+      "target": "lateral_movement",
+      "label": "Credential reuse",
+      "animated": true
+    },
+    {
+      "id": "e4",
+      "source": "lateral_movement",
+      "target": "impact",
+      "label": "Data staging",
+      "dashed": true
+    }
+  ]
+}
