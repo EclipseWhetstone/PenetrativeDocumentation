@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  font-family: "Share Tech Mono", monospace;
+  background: radial-gradient(circle at top, rgba(0, 60, 0, 0.35), rgba(0, 5, 0, 0.95));
+  color: #c6ffdd;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: #00ff90;
+}

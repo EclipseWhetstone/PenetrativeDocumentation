@@ -1,0 +1,582 @@
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
+
+:root {
+  --matrix-bg: #020403;
+  --matrix-panel: rgba(0, 12, 0, 0.82);
+  --matrix-border: rgba(0, 255, 144, 0.35);
+  --matrix-accent: #00ff90;
+  --matrix-text: #c6ffdd;
+  --matrix-muted: #6bbf99;
+  --matrix-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+}
+
+.app-shell {
+  color: var(--matrix-text);
+  padding: 2.5rem clamp(1.5rem, 5vw, 3.5rem);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.app-header h1 {
+  margin: 0 0 0.25rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  color: var(--matrix-accent);
+  text-shadow: 0 0 12px rgba(0, 255, 144, 0.5);
+}
+
+.app-header p {
+  margin: 0;
+  color: var(--matrix-muted);
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: linear-gradient(135deg, rgba(0, 25, 0, 0.85), rgba(0, 40, 0, 0.8));
+  border: 1px solid var(--matrix-border);
+  border-radius: 999px;
+  box-shadow: var(--matrix-shadow);
+}
+
+.status-chip__face {
+  font-size: 1.5rem;
+}
+
+.status-chip__text {
+  font-size: 0.95rem;
+  color: var(--matrix-text);
+}
+
+.app-nav {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.app-nav button {
+  font-family: "Share Tech Mono", monospace;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 1px solid var(--matrix-border);
+  border-radius: 999px;
+  color: var(--matrix-text);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-nav button:hover,
+.app-nav button:focus-visible {
+  background: rgba(0, 255, 144, 0.12);
+  outline: none;
+  box-shadow: 0 0 14px rgba(0, 255, 144, 0.45);
+}
+
+.app-nav button.active {
+  background: rgba(0, 255, 144, 0.2);
+  color: #0b2d15;
+}
+
+.dashboard {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.matrix-card {
+  background: var(--matrix-panel);
+  border: 1px solid var(--matrix-border);
+  border-radius: 18px;
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+  box-shadow: var(--matrix-shadow);
+  backdrop-filter: blur(6px);
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-family: "Share Tech Mono", monospace;
+  color: var(--matrix-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panel-subtitle {
+  margin-top: 0.35rem;
+  color: var(--matrix-muted);
+  font-size: 0.95rem;
+}
+
+.control-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.matrix-button {
+  flex: 1;
+  min-width: 220px;
+  padding: 1rem 1.25rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--matrix-accent);
+  background: rgba(0, 40, 0, 0.85);
+  border: 1px solid var(--matrix-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+.matrix-button:hover:not(:disabled),
+.matrix-button:focus-visible:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45), 0 0 18px rgba(0, 255, 144, 0.4);
+  outline: none;
+}
+
+.matrix-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.findings {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.vulnerability-card__header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.vulnerability-card__face {
+  font-size: 1.75rem;
+}
+
+.vulnerability-card__severity {
+  margin: 0.25rem 0 0;
+  color: var(--matrix-muted);
+}
+
+.vulnerability-card__meta {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.vulnerability-card__meta div {
+  background: rgba(0, 30, 0, 0.55);
+  border: 1px solid rgba(0, 255, 144, 0.2);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.vulnerability-card__meta dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--matrix-muted);
+}
+
+.vulnerability-card__meta dd {
+  margin: 0.35rem 0 0;
+  font-weight: 600;
+  color: var(--matrix-text);
+}
+
+.vulnerability-card__notes h4 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-family: "Share Tech Mono", monospace;
+  color: var(--matrix-accent);
+}
+
+.vulnerability-card__notes ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--matrix-text);
+}
+
+.vulnerability-card__raw {
+  margin-top: 1.5rem;
+}
+
+.vulnerability-card__raw summary {
+  cursor: pointer;
+  color: var(--matrix-muted);
+}
+
+.vulnerability-card__raw pre {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 10, 0, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 255, 144, 0.25);
+  color: var(--matrix-text);
+  white-space: pre-wrap;
+  font-family: "Share Tech Mono", monospace;
+}
+
+.log-window {
+  background: rgba(0, 10, 0, 0.75);
+  border: 1px solid rgba(0, 255, 144, 0.2);
+  border-radius: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 1.25rem;
+}
+
+.log-window ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-family: "Share Tech Mono", monospace;
+  color: var(--matrix-text);
+}
+
+.details-text {
+  color: var(--matrix-text);
+  line-height: 1.6;
+}
+
+.details-placeholder {
+  text-align: center;
+  color: var(--matrix-muted);
+}
+
+.details-placeholder__face {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.attack-map__body {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.attack-map__canvas {
+  height: 420px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 255, 144, 0.3);
+  background: rgba(0, 12, 0, 0.6);
+}
+
+.attack-map__details {
+  background: rgba(0, 15, 0, 0.65);
+  border: 1px solid rgba(0, 255, 144, 0.25);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.attack-map__details h3 {
+  margin: 0;
+  font-family: "Share Tech Mono", monospace;
+  color: var(--matrix-accent);
+}
+
+.attack-map__details h4 {
+  margin: 0;
+  color: var(--matrix-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.attack-map__details ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.matrix-reactflow .react-flow__controls {
+  border: 1px solid rgba(0, 255, 144, 0.2);
+}
+
+.matrix-reactflow .react-flow__panel {
+  color: var(--matrix-accent);
+}
+
+.timeline {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.timeline__events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.timeline__event {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 255, 144, 0.2);
+  background: rgba(0, 20, 0, 0.6);
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.timeline__event:hover,
+.timeline li.active .timeline__event {
+  transform: translateX(6px);
+  border-color: var(--matrix-accent);
+}
+
+.timeline__index {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 1.1rem;
+  color: var(--matrix-accent);
+}
+
+.timeline__face {
+  font-size: 1.4rem;
+}
+
+.timeline__meta {
+  display: grid;
+  gap: 0.35rem;
+  text-align: left;
+}
+
+.timeline__title {
+  font-weight: 600;
+  color: var(--matrix-text);
+}
+
+.timeline__time {
+  color: var(--matrix-muted);
+  font-size: 0.85rem;
+}
+
+.timeline__details {
+  background: rgba(0, 15, 0, 0.7);
+  border: 1px solid rgba(0, 255, 144, 0.25);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.timeline__details h3 {
+  margin: 0;
+  font-family: "Share Tech Mono", monospace;
+  color: var(--matrix-accent);
+}
+
+.timeline__details-time {
+  margin: 0;
+  color: var(--matrix-muted);
+  letter-spacing: 0.05em;
+}
+
+@media (min-width: 1024px) {
+  .dashboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  .attack-map__body {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.error-text {
+  color: #ff7a7a;
+  margin-top: 0.75rem;
+}
+
+.intelligence-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 900px) {
+  .intelligence-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.intelligence-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.intelligence-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: "Share Tech Mono", monospace;
+  color: var(--matrix-muted);
+}
+
+.intelligence-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.intelligence-stats div {
+  background: rgba(0, 32, 0, 0.55);
+  border: 1px solid rgba(0, 255, 144, 0.25);
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  min-width: 160px;
+}
+
+.intelligence-stats dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin: 0 0 0.35rem;
+  color: var(--matrix-muted);
+}
+
+.intelligence-stats dd {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--matrix-accent);
+}
+
+.intelligence-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.intelligence-table th,
+.intelligence-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 255, 144, 0.12);
+}
+
+.intelligence-table th {
+  font-family: "Share Tech Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--matrix-muted);
+}
+
+.table-title {
+  display: block;
+  font-weight: 600;
+  color: var(--matrix-text);
+}
+
+.table-subtitle {
+  display: block;
+  color: var(--matrix-muted);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.intelligence-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.intelligence-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--matrix-muted);
+}
+
+.intelligence-form input,
+.intelligence-form select,
+.intelligence-form textarea {
+  background: rgba(0, 30, 0, 0.6);
+  border: 1px solid rgba(0, 255, 144, 0.25);
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  color: var(--matrix-text);
+  font-family: inherit;
+}
+
+.intelligence-form textarea {
+  resize: vertical;
+}
+
+.intelligence-history {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.intelligence-history li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  background: rgba(0, 32, 0, 0.55);
+  border: 1px solid rgba(0, 255, 144, 0.2);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+.history-technique {
+  font-weight: 600;
+  color: var(--matrix-text);
+}
+
+.history-target,
+.history-time,
+.history-detail {
+  color: var(--matrix-muted);
+  font-size: 0.85rem;
+}
+
+.outcome-tag {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 255, 144, 0.3);
+  background: rgba(0, 255, 144, 0.15);
+  color: var(--matrix-accent);
+}
+
+.outcome-success {
+  background: rgba(0, 255, 144, 0.22);
+  color: #022a15;
+}
+
+.outcome-failure {
+  background: rgba(255, 64, 64, 0.18);
+  color: #ff8a8a;
+  border-color: rgba(255, 64, 64, 0.4);
+}
