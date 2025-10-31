@@ -1,7 +1,5 @@
-import tkinter as tk
 import sys
 import json
-from ui import SecurityApp
 from scanner import run_all_scans
 
 def run_headless_scan():
@@ -27,7 +25,8 @@ if __name__ == "__main__":
     if "--headless" in sys.argv:
         run_headless_scan()
     else:
-        # This is the original code to run the UI application.
+        import tkinter as tk
+        from ui import SecurityApp
         root = tk.Tk()
-        app = SecurityApp(root)
+        SecurityApp(root)
         root.mainloop()

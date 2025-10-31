@@ -1,5 +1,8 @@
 import platform
-import winreg
+try:
+    import winreg  # type: ignore[attr-defined]
+except ModuleNotFoundError:
+    winreg = None  # type: ignore[assignment]
 import json
 from packaging.version import parse
 
@@ -29,7 +32,7 @@ def scan_outdated_software(db):
     Gets outdated software list, gets installed software, checks each software against
     vulnerability database.
     """
-    if platform.system() != "Windows":
+    if platform.system() != "Windows" or winreg is None:
         return ["Software scan is only supported on Windows."]
 
     software_rules = db.get("outdated_software", {})
