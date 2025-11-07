@@ -26,6 +26,16 @@ GUEST_SCRIPT_PATH = "C:\\Users\\VMUsername\\Desktop\\client\\main.py"
 
 app = Flask(__name__)
 CORS(app)
+
+@app.get("/")
+def index():
+    return {"ok": True, "service": "PenetrativeDocumentation API",
+            "routes": ["/api/report", "/health"]}, 200
+
+@app.get("/health")
+def health():
+    return "ok", 200
+
 intelligence_agent = AdaptiveIntelligence()
 
 
